@@ -61,17 +61,20 @@ public class SockServiceImpl implements SockService {
         sockValidator.validateGetRequestForSockCount(color, operation, cottonPart);
 
         int count = 0;
-        if ("moreThan".equals(operation)) {
-            for (var sock : sockRepository.findAllByColorAndCottonPartGreaterThan(color, cottonPart)) {
-                count += sock.getQuantity();
-            }
-        } else if ("lessThan".equals(operation)) {
-            for (var sock : sockRepository.findAllByColorAndCottonPartLessThan(color, cottonPart)) {
-                count += sock.getQuantity();
-            }
-        } else if ("equal".equals(operation)) {
-            var storedOpt = sockRepository.findByColorAndCottonPart(color, cottonPart);
-            return storedOpt.map(Sock::getQuantity).orElse(0);
+        switch (operation) {
+            case "moreThan":
+                for (var sock : sockRepository.findAllByColorAndCottonPartGreaterThan(color, cottonPart)) {
+                    count += sock.getQuantity();
+                }
+                break;
+            case "lessThan":
+                for (var sock : sockRepository.findAllByColorAndCottonPartLessThan(color, cottonPart)) {
+                    count += sock.getQuantity();
+                }
+                break;
+            case "equal":
+                var storedOpt = sockRepository.findByColorAndCottonPart(color, cottonPart);
+                return storedOpt.map(Sock::getQuantity).orElse(0);
         }
 
         log.info("Counted {{}} socks for request: color={{}}, operation={{}}, cottonPart={{}}",
